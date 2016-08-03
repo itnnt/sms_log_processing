@@ -17,3 +17,4 @@ for i in range(20):
     bar.update(i+1)
     sleep(0.1)
 bar.finish()
+key = input("\nSms log processing has completed. Press Enter to close the program.")

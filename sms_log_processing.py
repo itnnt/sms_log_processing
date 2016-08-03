@@ -74,30 +74,32 @@ if __name__ == '__main__':
     bar1 = progressbar.ProgressBar(widgets=widgets1)
 
     sms_log = []
-    bar1.start()
     for f in sms_log_files:
+        bar1.start()
         sms_log_workbook = openpyxl.load_workbook(os.path.join(sms_log_folder, f))
         active_worksheet = sms_log_workbook.active
         bar1.maxval = active_worksheet.max_row
         sms_log.extend(convert_excel_to_dict(sms_log_workbook, sms_log_workbook.active.title, bar1))
-    bar1.finish()
+        bar1.finish()
 
-    bar = progressbar.ProgressBar(maxval=len(sms_log), widgets=widgets4)
+        bar = progressbar.ProgressBar(maxval=len(sms_log), widgets=widgets4)
 
-    bar.start()
-    for sms in sms_log:
-        bar.update(sms['INDEX'])
-        for template in sms_templates:
-            try:
-                # matchObj = (re.match(r'Generali chuc [a-zA-Z0-9\s.]+ ngay Quoc te thieu nhi that vui ve va y nghia.', sms['MESSAGE']))
-                matchObj = (re.match(template['TEMPLATE'], sms['MESSAGE']))
-                if matchObj:
-                    # print('%s matched %s' % (matchObj.group(), template['TEMPLATE'],))
-                    dept_column = 'K%s' % (sms['INDEX']+1)
-                    sms_log_workbook.active[dept_column] = template['DEPT']
-                    break
-            except TypeError as typeError:
-                print('%s: %s' % (typeError, sms, ))
-    sms_log_workbook.active['K1'] = 'DEPT'
-    sms_log_workbook.save(os.path.join(sms_log_folder, f))
-    bar.finish()
+        bar.start()
+        for sms in sms_log:
+            bar.update(sms['INDEX'])
+            for template in sms_templates:
+                try:
+                    # matchObj = (re.match(r'Generali chuc [a-zA-Z0-9\s.]+ ngay Quoc te thieu nhi that vui ve va y nghia.', sms['MESSAGE']))
+                    matchObj = (re.match(template['TEMPLATE'], sms['MESSAGE']))
+                    if matchObj:
+                        # print('%s matched %s' % (matchObj.group(), template['TEMPLATE'],))
+                        dept_column = 'K%s' % (sms['INDEX']+1)
+                        sms_log_workbook.active[dept_column] = template['DEPT']
+                        break
+                except TypeError as typeError:
+                    print('%s: %s' % (typeError, sms, ))
+        sms_log_workbook.active['K1'] = 'DEPT'
+        sms_log_workbook.save(os.path.join(sms_log_folder, f))
+        bar.finish()
+
+    key = input("\nSms log processing has completed. Press Enter to close the program.")
